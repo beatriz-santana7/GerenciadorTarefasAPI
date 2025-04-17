@@ -1,7 +1,6 @@
 import express, { Request, Response } from "express";
-import { Connection } from "mongoose"; // Não esquece esse import!
+import { Connection } from "mongoose"; 
 import conectaNaDatabase from "../src/config/dbConnect";
-import routes from "./rotes";  // Importando as rotas corretamente
 
 const app = express();
 app.use(express.json());  // Middleware para processar JSON
