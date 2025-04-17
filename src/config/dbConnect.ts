@@ -1,5 +1,3 @@
-//mongodb+srv://admin:<db_password>@cluster0.3tpqnja.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-
 import mongoose, { Connection } from "mongoose";
 import dotenv from "dotenv";
 

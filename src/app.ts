@@ -1,74 +1,68 @@
 import express, { Request, Response } from "express";
+import { Connection } from "mongoose"; // Não esquece esse import!
+import conectaNaDatabase from "../src/config/dbConnect";
+import routes from "./rotes";  // Importando as rotas corretamente
 
 const app = express();
-app.use(express.json());
+app.use(express.json());  // Middleware para processar JSON
 
-export default app; //exportando o app para ser acessado pelo server.ts
+// Função para conectar ao banco de dados
+async function main() {
+  const conexao: Connection = await conectaNaDatabase();
 
-interface Tarefa{
-    id: number;
-    tarefa: string;
-    status: "pendente" | "concluida" | "cancelada";
-}
-
-const tarefas: Tarefa[] = [
-    {
-        id: 1,
-        tarefa: "Iniciar parte 3 do Curso",
-        status: "pendente"
-      },
-
-      {
-        id: 2,
-        tarefa: "Implementar o CRUD no projeto",
-        status: "concluida"
-      }
-      
-    
-];
-
-    
-function buscaTarefa(id: string): number{  //função para buscar a tarefa pelo id
-    return tarefas.findIndex((tarefa) => tarefa.id === Number(id))
-
-}
-
-
-app.get("/tarefas/pendentes", (_req, res) => {         //busca de tarefa por status
-    const pendentes = tarefas.filter(t => t.status === "pendente");
-    res.status(200).json(pendentes);
+  conexao.on("error", (erro: Error) => {
+    console.error("Erro de conexão:", erro);
   });
 
-  app.get("/tarefas/concluidas", (_req, res) => {         //busca de tarefa por status
-    const concluidas = tarefas.filter(t => t.status === "concluida");
-    res.status(200).json(concluidas);
+  conexao.on("connected", () => {
+    console.log("Conexão com o banco feita com sucesso (evento: connected)!");
   });
+}
+
+main().catch(err => console.error("Erro no main:", err));
+
+export default app;
+  // Agora as rotas definidas em `routes` estarão acessíveis via /api
+
+
+//exportando o app para ser acessado pelo server.ts
+
+
+//app.get("/tarefas/pendentes", (_req, res) => {         //busca de tarefa por status
+    //const pendentes = tarefas.filter(t => t.status === "pendente");
+    //res.status(200).json(pendentes);
+  //});
+
+  //aapp.get("/tarefas/concluidas", (_req, res) => {         //busca de tarefa por status
+    //aconst concluidas = tarefas.filter(t => t.status === "concluida");
+    //ares.status(200).json(concluidas);
+ //a });
   
 
-app.get("/tarefas/:id", (req: Request, resp: Response) => {  //buscando tarefa por id
-    const index = buscaTarefa(req.params.id);
-    resp.status(200).json(tarefas[index]);
-})
+//app.get("/tarefas/:id", (req: Request, resp: Response) => {  //buscando tarefa por id
+    //const index = buscaTarefa(req.params.id);
+   // resp.status(200).json(tarefas[index]);
+//})
 
-app.post("/tarefas", (req: Request, res: Response) => {  //adicionando nova tarefa via post
-    const novaTarefa: Tarefa = req.body;
-    tarefas.push(novaTarefa);
-    res.status(201).send("Tarefa cadastrada!");
-});
+//app.post("/tarefas", (req: Request, res: Response) => {  //adicionando nova tarefa via post
+   // const novaTarefa: Tarefa = req.body;
+   // tarefas.push(novaTarefa);
+   // res.status(201).send("Tarefa cadastrada!");
+//});
 
-app.put("/tarefas/:id", (req: Request, res: Response) => {  //editar uma terefa, passando o id
-    const index = buscaTarefa(req.params.id);
-    tarefas[index].tarefa = req.body.tarefa;
-    res.status(200).json(tarefas);
+// app.put("/tarefas/:id", (req: Request, res: Response) => {  //editar uma terefa, passando o id
+//     const index = buscaTarefa(req.params.id);
+//     tarefas[index].tarefa = req.body.tarefa;
+//     res.status(200).json(tarefas);
 
-});
+// });
 
-app.delete("/tarefas/:id", (req: Request, res: Response) =>
-{
-    const index = buscaTarefa(req.params.id);
-    tarefas.splice(index, 1);
-    res.status(200).send("Tarefa removida!")
-} )
+// app.delete("/tarefas/:id", (req: Request, res: Response) =>
+// {
+//     const index = buscaTarefa(req.params.id);
+//     tarefas.splice(index, 1);
+//     res.status(200).send("Tarefa removida!")
+// } )
 
 
 
